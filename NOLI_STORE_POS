@@ -1,0 +1,161 @@
+NOLI_STORE_POS/
+│
+├── index.html
+├── style.css
+├── script.js
+└── database/
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOLI STORE POS</title>
+<style>
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f1f5f9;
+  color:#172033;
+}
+header {
+  background:#123b68;
+  color:white;
+  padding:20px;
+  text-align:center;
+}
+main { padding:15px; max-width:600px; margin:auto; }
+.card {
+  background:white;
+  padding:16px;
+  border-radius:12px;
+  margin-bottom:14px;
+  box-shadow:0 2px 8px #0001;
+}
+h2 { margin-top:0; }
+input,button {
+  width:100%;
+  padding:13px;
+  margin:6px 0;
+  border-radius:8px;
+  font-size:16px;
+}
+input { border:1px solid #ccd4df; }
+button {
+  border:0;
+  background:#1769aa;
+  color:white;
+  font-weight:bold;
+}
+.product {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #eee;
+  padding:10px 0;
+  gap:8px;
+}
+.product button { width:auto; }
+.total {
+  font-size:24px;
+  font-weight:bold;
+  color:#1769aa;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h2>NOLI STORE</h2>
+<p>STORE COUNTER PAYMENT SYSTEM</p>
+</header>
+
+<main>
+<div class="card">
+<h2>Product List</h2>
+<div id="products"></div>
+</div>
+
+<div class="card">
+<h2>Shopping Cart</h2>
+<div id="cart">No products yet.</div>
+<p>Total: <span class="total" id="total">₱0.00</span></p>
+</div>
+
+<div class="card">
+<h2>Cash Payment</h2>
+<input type="number" id="cash"
+placeholder="Enter cash received"
+min="0" step="0.01">
+<button onclick="pay()">PAY NOW</button>
+<h3 id="change">Change: ₱0.00</h3>
+<button onclick="clearCart()">CLEAR CART</button>
+</div>
+</main>
+
+<script>
+const products = [
+ {name:"Rice 1 Kilo",price:55},
+ {name:"Canned Sardines",price:25},
+ {name:"Instant Noodles",price:15},
+ {name:"Bottled Water",price:20},
+ {name:"Coffee Sachet",price:8}
+];
+
+let cart=[];
+
+function money(n){
+ return "₱"+n.toFixed(2);
+}
+
+function showProducts(){
+ document.getElementById("products").innerHTML=
+ products.map((p,i)=>`
+ <div class="product">
+ <span>${p.name}<br>${money(p.price)}</span>
+ <button onclick="add(${i})">ADD</button>
+ </div>`).join("");
+}
+
+function add(i){
+ cart.push(products[i]);
+ showCart();
+}
+
+function showCart(){
+ let total=cart.reduce((s,p)=>s+p.price,0);
+ document.getElementById("cart").innerHTML=
+ cart.length ? cart.map(p=>
+ `<p>${p.name} - ${money(p.price)}</p>`
+ ).join("") : "No products yet.";
+ document.getElementById("total").textContent=money(total);
+}
+
+function pay(){
+ let total=cart.reduce((s,p)=>s+p.price,0);
+ let cash=Number(document.getElementById("cash").value);
+
+ if(total===0) return alert("Cart is empty!");
+ if(!Number.isFinite(cash)||cash<total)
+ return alert("Insufficient payment!");
+
+ document.getElementById("change").textContent=
+ "Change: "+money(cash-total);
+ alert("Payment successful!");
+}
+
+function clearCart(){
+ cart=[];
+ document.getElementById("cash").value="";
+ document.getElementById("change").textContent="Change: ₱0.00";
+ showCart();
+}
+
+showProducts();
+showCart();
+</script>
+
+</body>
+</html>
+
